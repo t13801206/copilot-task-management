@@ -90,16 +90,25 @@ gh project item-edit --project-id "<プロジェクト ID>" --id "<アイテム 
 
 ## gh CLI の利用
 
-操作には `gh` CLI を使う。主なコマンド例：
+操作には `gh` CLI を使う。
+
+### データ取得のルール
+
+- `gh issue list` には常に `--limit 500` を付与し、デフォルトの 30 件制限を回避する。
+- `--state` はデフォルト（open のみ）を基本とし、closed の情報が必要な場合のみ `--state closed` や `--state all` を使う。
+  - open のみで十分な場面: 一覧表示、次にやるタスクの提案
+  - closed が必要な場面: 進捗率の計算、日次・週次レビューでの完了タスク集計
+
+### 主なコマンド例
 
 ```bash
 # Issue 作成
 gh issue create --title "タイトル" --body "本文" --label "goal"
 gh issue create --title "タイトル" --body "本文" --label "task"
 
-# Issue 一覧
-gh issue list --label "goal"
-gh issue list --label "task"
+# Issue 一覧（open のみ）
+gh issue list --label "goal" --limit 500
+gh issue list --label "task" --limit 500
 
 # Issue を close
 gh issue close <番号>
