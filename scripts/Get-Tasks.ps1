@@ -3,21 +3,31 @@
     GitHub Projects からタスク一覧を取得する
 .PARAMETER Status
     フィルタするステータス（Todo, In Progress, Waiting, Done）。省略時はすべて表示。
+.PARAMETER ProjectNumber
+    プロジェクト番号を直接指定する。省略時はリポジトリにリンクされたプロジェクトを自動検出。
 .EXAMPLE
     .\scripts\Get-Tasks.ps1
     .\scripts\Get-Tasks.ps1 -Status "In Progress"
     .\scripts\Get-Tasks.ps1 -Status "Todo","In Progress"
+    .\scripts\Get-Tasks.ps1 -ProjectNumber 7
 #>
 param(
     [ValidateSet("Todo", "In Progress", "Waiting", "Done")]
-    [string[]]$Status
+    [string[]]$Status,
+    [int]$ProjectNumber
 )
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-$ProjectNumber = 7
-$Owner = "runceel"
-$Repo = "runceel/copilot-task-management"
+# --- プロジェクト情報の自動検出 ---
+$resolveArgs = @{}
+if ($ProjectNumber -gt 0) { $resolveArgs["ProjectNumber"] = $ProjectNumber }
+$projectInfo = & "$PSScriptRoot\Resolve-ProjectNumber.ps1" @resolveArgs
+if (-not $projectInfo) { exit 1 }
+
+$Owner = $projectInfo.ProjectOwner
+$ProjNum = $projectInfo.ProjectNumber
+$Repo = $projectInfo.RepoFullName
 $Label = "task"
 
 $query = @'
@@ -54,7 +64,7 @@ $query = @'
 }
 '@
 
-$query = $query -replace '__OWNER__', $Owner -replace '__PROJECT_NUMBER__', $ProjectNumber
+$query = $query -replace '__OWNER__', $Owner -replace '__PROJECT_NUMBER__', $ProjNum
 
 $result = gh api graphql -f query=$query 2>&1
 $response = ($result | Out-String) | ConvertFrom-Json

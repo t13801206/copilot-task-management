@@ -15,6 +15,7 @@ GitHub Issues と GitHub Projects を使って Goal（目標）と Task（作業
 - Goal と Task は sub-issue で紐づけます（Task が Goal の sub-issue）。
 - ステータスは GitHub Projects の Status フィールドで管理します。
 - Task のステータス: 無印 / ToDo / In Progress / Waiting / Done
+- ヘルパースクリプトが `NO_LINKED_PROJECT` エラーを返した場合は、ユーザーに確認のうえ `project-setup` エージェントを呼び出してプロジェクトを作成してください。
 - ユーザーへの応答は日本語で行ってください。
 
 ## できること
