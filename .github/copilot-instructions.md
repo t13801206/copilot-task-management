@@ -215,15 +215,24 @@ gh api repos/{owner}/{repo}/issues/<Goal番号>/sub_issues --jq '.[] | {number, 
 GitHub MCP Server のツールでは Projects V2 のカスタムフィールド（Status 等）を取得できない。
 `gh api graphql` で ProjectV2 API を使って取得する。
 
-- プロジェクト番号: **7**（「個人タスク管理デモ」）
-- オーナー: **runceel**
+#### プロジェクト番号の取得
+
+プロジェクト番号はハードコードせず、毎回リポジトリにリンクされたプロジェクトから動的に取得する。
 
 ```bash
-# 全アイテムのステータスを取得
+# リポジトリにリンクされたプロジェクトを取得
+gh api graphql -f query='{repository(owner:"runceel",name:"copilot-task-management"){projectsV2(first:10){nodes{number title}}}}'
+```
+
+- リンクされたプロジェクトが **1 件**の場合: そのプロジェクト番号を使う。
+- リンクされたプロジェクトが **0 件または複数**の場合: 操作を中止し、ユーザーにプロジェクトが特定できない旨を伝える。
+
+```bash
+# 全アイテムのステータスを取得（<番号> は上記で取得したプロジェクト番号）
 gh api graphql -f query='
 {
   user(login: "runceel") {
-    projectV2(number: 7) {
+    projectV2(number: <番号>) {
       items(first: 100) {
         nodes {
           fieldValueByName(name: "Status") {
@@ -264,11 +273,11 @@ gh api graphql -f query='...' --jq '
 Due Date も同様に `fieldValueByName` で取得できる。
 
 ```bash
-# ステータスと Due Date を同時に取得
+# ステータスと Due Date を同時に取得（<番号> は動的取得したプロジェクト番号）
 gh api graphql -f query='
 {
   user(login: "runceel") {
-    projectV2(number: 7) {
+    projectV2(number: <番号>) {
       items(first: 100) {
         nodes {
           fieldValueByName(name: "Status") {
