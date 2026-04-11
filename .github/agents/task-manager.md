@@ -49,15 +49,22 @@ Task の本文には以下を含めてください:
 ### 3. Goal / Task の一覧表示
 
 ユーザーの要求に応じて Issue を一覧表示します。
-一覧表示では open の Issue のみ取得すれば十分です。
+**ステータスや Due Date を含む一覧にはヘルパースクリプトを使ってください。**
+
+```powershell
+# Task 一覧（ステータス・Due Date 付き）
+.\scripts\Get-Tasks.ps1
+.\scripts\Get-Tasks.ps1 -Status "In Progress"
+.\scripts\Get-Tasks.ps1 -Status "Todo","In Progress"
+
+# Goal 一覧（ステータス・Due Date 付き）
+.\scripts\Get-Goals.ps1
+.\scripts\Get-Goals.ps1 -Status "In Progress"
+```
+
+特定 Goal の sub-issue（Task）一覧など、スクリプトでカバーしていない情報は `gh` CLI で取得します:
 
 ```bash
-# Goal 一覧（open のみ）
-gh issue list --label "goal" --limit 500
-
-# Task 一覧（open のみ）
-gh issue list --label "task" --limit 500
-
 # 特定 Goal の sub-issue（Task）一覧
 gh issue view <goal番号> --json subIssues
 ```
@@ -80,6 +87,13 @@ gh project item-edit --project-id <PROJECT_ID> --id <ITEM_ID> --field-id <FIELD_
 ### 5. Goal の進捗確認
 
 指定された Goal の配下にある Task のステータスを集計し、進捗を報告します。
+
+**データ取得にはヘルパースクリプトを使ってください:**
+
+```powershell
+# 全タスクのステータスを取得し、Goal の sub-issue と突き合わせる
+.\scripts\Get-Tasks.ps1
+```
 
 報告フォーマット例:
 ```
