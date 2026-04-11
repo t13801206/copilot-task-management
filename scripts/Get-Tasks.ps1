@@ -2,7 +2,7 @@
 .SYNOPSIS
     GitHub Projects からタスク一覧を取得する
 .PARAMETER Status
-    フィルタするステータス（Todo, In Progress, Waiting, Done）。省略時はすべて表示。
+    フィルタするステータス（Todo, In Progress, Done）。省略時はすべて表示。
 .PARAMETER ProjectNumber
     プロジェクト番号を直接指定する。省略時はリポジトリにリンクされたプロジェクトを自動検出。
 .EXAMPLE
@@ -12,7 +12,7 @@
     .\scripts\Get-Tasks.ps1 -ProjectNumber 7
 #>
 param(
-    [ValidateSet("Todo", "In Progress", "Waiting", "Done")]
+    [ValidateSet("Todo", "In Progress", "Done")]
     [string[]]$Status,
     [int]$ProjectNumber
 )
@@ -104,9 +104,8 @@ $results | Sort-Object @{Expression = {
     switch ($_.Status) {
         "In Progress" { 1 }
         "Todo"        { 2 }
-        "Waiting"     { 3 }
-        "(未設定)"    { 4 }
-        "Done"        { 5 }
+        "(未設定)"    { 3 }
+        "Done"        { 4 }
         default       { 9 }
     }
 }}, Number | Format-Table -AutoSize

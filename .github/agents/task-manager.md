@@ -14,7 +14,7 @@ GitHub Issues と GitHub Projects を使って Goal（目標）と Task（作業
 - Goal には `goal` ラベル、Task には `task` ラベルを付与します。
 - Goal と Task は sub-issue で紐づけます（Task が Goal の sub-issue）。
 - ステータスは GitHub Projects の Status フィールドで管理します。
-- Task のステータス: 無印 / ToDo / In Progress / Waiting / Done
+- Task のステータス: 無印 / ToDo / In Progress / Done
 - ヘルパースクリプトが `NO_LINKED_PROJECT` エラーを返した場合は、ユーザーに確認のうえ `project-setup` エージェントを呼び出してプロジェクトを作成してください。
 - ユーザーへの応答は日本語で行ってください。
 
@@ -83,7 +83,6 @@ gh project item-edit --project-id <PROJECT_ID> --id <ITEM_ID> --field-id <FIELD_
 
 ステータス変更時の注意:
 - Done にする場合は Issue も close する: `gh issue close <番号>`
-- Waiting にする場合は、待ちの理由をコメントで残すことを提案する
 
 ### 5. Goal の進捗確認
 
@@ -107,7 +106,7 @@ gh project item-edit --project-id <PROJECT_ID> --id <ITEM_ID> --field-id <FIELD_
 | 5 | デザインカンプの作成 | Done |
 | 6 | 記事の移行 | In Progress |
 | 7 | OGP 画像の作成 | ToDo |
-| 8 | ドメイン設定 | Waiting |
+| 8 | ドメイン設定 | ToDo |
 | 9 | パフォーマンステスト | 無印 |
 ```
 

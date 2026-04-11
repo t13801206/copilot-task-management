@@ -29,7 +29,7 @@ gh repo view --json owner,name --jq '"\(.owner.login)/\(.name)"'
 
 以下を提示して確認を取る:
 - プロジェクト名（デフォルト: `個人タスク管理`）
-- 作成されるフィールド: Status（Todo / In Progress / Waiting / Done）、Due Date
+- 作成されるフィールド: Status（Todo / In Progress / Done）、Due Date
 
 ### 3. プロジェクト作成
 
@@ -52,22 +52,7 @@ gh project field-create <プロジェクト番号> --owner <owner> --name "Due D
 gh project link <プロジェクト番号> --owner <owner> --repo <owner>/<repo>
 ```
 
-### 6. Status フィールドの Waiting オプション追加（手動案内）
-
-GitHub CLI では既存の Status フィールドのオプションを追加・変更できません。
-以下の手動手順をユーザーに案内してください:
-
-> **⚠️ 手動設定が必要です**
->
-> プロジェクトの Web UI で Status フィールドに「Waiting」オプションを追加してください:
-> 1. プロジェクトページを開く（URL を表示）
-> 2. 任意のアイテムの Status セルをクリック
-> 3. フィールド設定（⚙️）を開く
-> 4. 「Waiting」を追加
->
-> ※ Todo / In Progress / Done はデフォルトで存在します。
-
-### 7. 完了報告
+### 6. 完了報告
 
 作成されたプロジェクトの情報を報告:
 - プロジェクト番号
