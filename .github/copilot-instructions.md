@@ -188,3 +188,90 @@ gh api repos/{owner}/{repo}/issues/<Task番号> --jq '.parent_issue_url' | xargs
 # Goal の sub-issues（子 Task）を一覧取得
 gh api repos/{owner}/{repo}/issues/<Goal番号>/sub_issues --jq '.[] | {number, title, state}'
 ```
+
+### Projects のステータス取得
+
+GitHub MCP Server のツールでは Projects V2 のカスタムフィールド（Status 等）を取得できない。
+`gh api graphql` で ProjectV2 API を使って取得する。
+
+- プロジェクト番号: **7**（「個人タスク管理デモ」）
+- オーナー: **runceel**
+
+```bash
+# 全アイテムのステータスを取得
+gh api graphql -f query='
+{
+  user(login: "runceel") {
+    projectV2(number: 7) {
+      items(first: 100) {
+        nodes {
+          fieldValueByName(name: "Status") {
+            ... on ProjectV2ItemFieldSingleSelectValue {
+              name
+            }
+          }
+          content {
+            ... on Issue {
+              number
+              title
+              labels(first: 5) {
+                nodes { name }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}'
+```
+
+#### ステータスでフィルタする例
+
+```bash
+# In Progress のタスクのみ抽出
+gh api graphql -f query='...' --jq '
+  .data.user.projectV2.items.nodes[]
+  | select(.fieldValueByName.name == "In Progress")
+  | select(.content.labels.nodes | any(.name == "task"))
+  | {number: .content.number, title: .content.title}
+'
+```
+
+#### Due Date の取得
+
+Due Date も同様に `fieldValueByName` で取得できる。
+
+```bash
+# ステータスと Due Date を同時に取得
+gh api graphql -f query='
+{
+  user(login: "runceel") {
+    projectV2(number: 7) {
+      items(first: 100) {
+        nodes {
+          fieldValueByName(name: "Status") {
+            ... on ProjectV2ItemFieldSingleSelectValue {
+              name
+            }
+          }
+          dueDate: fieldValueByName(name: "Due Date") {
+            ... on ProjectV2ItemFieldDateValue {
+              date
+            }
+          }
+          content {
+            ... on Issue {
+              number
+              title
+              labels(first: 5) {
+                nodes { name }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}'
+```
