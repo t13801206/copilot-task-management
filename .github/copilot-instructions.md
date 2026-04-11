@@ -1,0 +1,135 @@
+# Copilot Instructions — 個人タスク管理リポジトリ
+
+## リポジトリの目的
+
+このリポジトリは GitHub Issues と GitHub Projects を使った **個人タスク管理** の場です。
+コードは含まず、Issue の管理・追跡のみを行います。
+
+## 用語と構造
+
+### Goal（目標）
+
+- 達成したい目標を表す Issue。
+- ラベル: `goal`
+- 例: 「ブログのリニューアル」「AWS 認定資格の取得」
+
+### Task（タスク）
+
+- Goal を達成するための具体的な作業単位を表す Issue。
+- ラベル: `task`
+- 例: 「デザインカンプの作成」「模擬試験を 3 回受ける」
+
+### Goal と Task の関係
+
+- Goal と Task は **sub-issue** で紐づける（Task が Goal の sub-issue）。
+- 1 つの Task は 1 つの Goal にのみ属する。
+- Goal に属さない独立した Task も許容する。
+
+## ラベル規約
+
+| ラベル | 用途 |
+|--------|------|
+| `goal` | Goal Issue に付与 |
+| `task` | Task Issue に付与 |
+
+これ以外のラベルは自由に追加してよい（カテゴリ分類など）。
+
+## ステータス管理（GitHub Projects）
+
+ステータスは GitHub Projects の **Status フィールド** で管理する。Issue の open/closed とは別に、以下のステータスを使う。
+
+### Task のステータス
+
+| ステータス | 意味 |
+|------------|------|
+| *(無印)* | まだ未着手・未分類 |
+| **ToDo** | やると決めたもの |
+| **In Progress** | 現在作業中 |
+| **Waiting** | 仕掛かり中だが、諸事情で今は取り掛かれない待ち状態 |
+| **Done** | 完了 |
+
+- Task が Done になったら Issue も close する。
+- すべての Task が Done になった Goal は close を検討する。
+
+### Goal のステータス
+
+Goal のステータスも同じ Projects の Status フィールドで管理する。Task と同じステータス値を使用する。
+
+## Issue の書き方
+
+### Goal Issue
+
+```
+タイトル: 目標を簡潔に表す文
+本文:
+- 背景・動機（なぜこの Goal を立てたか）
+- 完了条件（何をもって達成とするか）
+```
+
+### Task Issue
+
+```
+タイトル: 作業内容を簡潔に表す文
+本文:
+- やること（具体的な作業内容）
+- 完了条件（何をもって Done とするか）
+- 備考（参考リンク、注意点など。任意）
+```
+
+## gh CLI の利用
+
+操作には `gh` CLI を使う。主なコマンド例：
+
+```bash
+# Issue 作成
+gh issue create --title "タイトル" --body "本文" --label "goal"
+gh issue create --title "タイトル" --body "本文" --label "task"
+
+# Issue 一覧
+gh issue list --label "goal"
+gh issue list --label "task"
+
+# Issue を close
+gh issue close <番号>
+```
+
+### Sub-issue の操作
+
+`gh issue update --add-sub-issue` は利用できない。代わりに **GraphQL API** を使う。
+
+```bash
+# Task を Goal の sub-issue として追加
+# まず Issue の node ID を取得
+gh issue view <番号> --json id --jq '.id'
+
+# GraphQL mutation で紐づけ
+gh api graphql -f query='
+mutation {
+  addSubIssue(input: {
+    issueId: "<Goal の node ID>"
+    subIssueId: "<Task の node ID>"
+  }) {
+    issue { id }
+  }
+}'
+```
+
+### 親 Goal の取得
+
+Task から親 Goal を取得するには **REST API** の `parent_issue_url` フィールドを使う。
+GraphQL には `parentIssue` フィールドが存在しないため、REST API 経由で取得する必要がある。
+
+```bash
+# Task の親 Goal の API URL を取得
+gh api repos/{owner}/{repo}/issues/<Task番号> --jq '.parent_issue_url'
+
+# 親 Goal の詳細を取得
+gh api repos/{owner}/{repo}/issues/<Task番号> --jq '.parent_issue_url' | xargs gh api --jq '{number, title, state}'
+```
+
+### Goal の子 Task 一覧の取得
+
+```bash
+# Goal の sub-issues（子 Task）を一覧取得
+gh api repos/{owner}/{repo}/issues/<Goal番号>/sub_issues --jq '.[] | {number, title, state}'
+```
