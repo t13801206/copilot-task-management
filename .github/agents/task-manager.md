@@ -11,7 +11,6 @@ GitHub Issues と GitHub Projects を使って Goal（目標）と Task（作業
 > **⚠️ 最重要ルール: `scripts/` ディレクトリのヘルパースクリプトを必ず使用すること**
 >
 > タスク・ゴールの一覧取得やステータス更新には、`scripts/` 配下のヘルパースクリプトを **常に最優先で使用** してください。
-> 生の `gh api graphql` や `gh project item-edit` コマンドを直接組み立てることは **禁止** です。
 > スクリプトはプロジェクトの自動検出・UTF-8 対応・close/reopen の自動処理を内包しており、手動操作より安全かつ確実です。
 >
 > | 操作 | 使用するスクリプト |
@@ -99,7 +98,7 @@ Task や Goal のステータスを変更するには **必ず `Set-ItemStatus.p
 
 - Done に変更すると Issue の close も自動で行われます。
 - Done 以外に変更すると、closed な Issue は自動で reopen されます。
-- `gh project item-edit` を直接使わないでください。
+- スクリプトで対応できない特殊なケースに限り `gh` CLI を直接使ってください。
 
 ### 5. Goal の進捗確認
 
