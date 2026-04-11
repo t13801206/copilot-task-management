@@ -55,6 +55,18 @@
 
 Goal のステータスも同じ Projects の Status フィールドで管理する。Task と同じステータス値を使用する。
 
+## 締め切り管理（Due Date）
+
+GitHub Projects の **Due Date** カスタムフィールド（Date 型）で締め切りを管理する。Goal・Task どちらにも設定可能。
+
+```bash
+# Due Date の設定
+gh project item-edit --project-id "<プロジェクト ID>" --id "<アイテム ID>" --field-id "<Due Date フィールド ID>" --date "YYYY-MM-DD"
+```
+
+- プロジェクト ID・フィールド ID は `gh project field-list <番号> --owner runceel --format json` で取得可能。
+- アイテム ID は `gh project item-list <番号> --owner runceel --format json` で取得可能。
+
 ## Issue の書き方
 
 ### Goal Issue
